@@ -42,11 +42,14 @@ final class GenerateContentRequestTests: XCTestCase {
         harmCategory: .dangerousContent,
         threshold: .blockLowAndAbove
       )],
-      tools: [Tool(functionDeclarations: [FunctionDeclaration(
-        name: "test-function-name",
-        description: "test-function-description",
-        parameters: nil
-      )])],
+      tools: [
+        Tool(functionDeclarations: [FunctionDeclaration(
+            name: "test-function-name",
+            description: "test-function-description",
+            parameters: nil
+          )]),
+        Tool.codeExecution,
+      ],
       toolConfig: ToolConfig(functionCallingConfig: FunctionCallingConfig(mode: .auto)),
       systemInstruction: ModelContent(role: "system", parts: "test-system-instruction"),
       isStreaming: false,
@@ -102,6 +105,11 @@ final class GenerateContentRequestTests: XCTestCase {
               }
             }
           ]
+        },
+        {
+          "codeExecution" : {
+
+          }
         }
       ]
     }

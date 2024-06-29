@@ -153,6 +153,10 @@ public struct FunctionDeclaration {
   }
 }
 
+public struct CodeExecutionDeclaration {
+    
+}
+
 /// Helper tools that the model may use to generate response.
 ///
 /// A `Tool` is a piece of code that enables the system to interact with external systems to
@@ -160,6 +164,9 @@ public struct FunctionDeclaration {
 public struct Tool {
   /// A list of `FunctionDeclarations` available to the model.
   let functionDeclarations: [FunctionDeclaration]?
+  
+  /// Code Execution Tool
+  let codeExecution: CodeExecutionDeclaration?
 
   /// Constructs a new `Tool`.
   ///
@@ -172,8 +179,9 @@ public struct Tool {
   ///   populating ``FunctionCall`` in the response. The next conversation turn may contain a
   ///   ``FunctionResponse`` in ``ModelContent/Part/functionResponse(_:)`` with the
   ///   ``ModelContent/role`` "function", providing generation context for the next model turn.
-  public init(functionDeclarations: [FunctionDeclaration]?) {
+  public init(functionDeclarations: [FunctionDeclaration]?, codeExecutionDeclaration: CodeExecutionDeclaration? = nil) {
     self.functionDeclarations = functionDeclarations
+    self.codeExecution = codeExecutionDeclaration
   }
 }
 
@@ -244,6 +252,50 @@ public struct FunctionResponse: Equatable {
   }
 }
 
+
+public struct ExecutableCode: Equatable {
+  /// The language of the executable code.
+  public let language: String
+
+  /// The source code.
+  public let code: String
+
+  /// Constructs a new `ExecutableCode`.
+  ///
+  /// - Parameters:
+  ///   - language: The language of the executable code.
+  ///   - code: The source code.
+  public init(language: String, code: String) {
+    self.language = language
+    self.code = code
+  }
+}
+
+public struct CodeExecutionResult: Equatable {
+  /// Outcome of the code execution
+  public let outcome: Outcome
+
+  /// Contains stdout when code execution is successful, stderr or other description otherwise.
+  public let output: String?
+    
+  public enum Outcome: String, CaseIterable {
+      case unspecified = "OUTCOME_UNSPECIFIED"
+      case ok = "OUTCOME_OK"
+      case failed = "OUTCOME_FAILED"
+      case deadlineExceeded = "OUTCOME_DEADLINE_EXCEEDED"
+  }
+
+  /// Constructs a new `CodeExecutionResult`.
+  ///
+  /// - Parameters:
+  ///   - outcome: Outcome of the code execution
+  ///   - output: Contains stdout when code execution is successful, stderr or other description otherwise.
+  public init(outcome: Outcome, output: String?) {
+    self.outcome = outcome
+    self.output = output
+  }
+}
+
 // MARK: - Codable Conformance
 
 extension FunctionCall: Decodable {
@@ -284,7 +336,14 @@ extension Schema: Encodable {}
 
 extension DataType: Encodable {}
 
-extension Tool: Encodable {}
+extension Tool: Encodable {
+    public static let codeExecution = Tool(functionDeclarations: nil, codeExecutionDeclaration: .init())
+    
+    enum CodingKeys: String, CodingKey {
+        case functionDeclarations
+        case codeExecution
+    }
+}
 
 extension FunctionCallingConfig: Encodable {}
 
@@ -293,3 +352,11 @@ extension FunctionCallingConfig.Mode: Encodable {}
 extension ToolConfig: Encodable {}
 
 extension FunctionResponse: Encodable {}
+
+extension CodeExecutionDeclaration: Encodable {}
+
+extension ExecutableCode: Codable {}
+
+extension CodeExecutionResult: Codable {}
+
+extension CodeExecutionResult.Outcome: Codable {}
