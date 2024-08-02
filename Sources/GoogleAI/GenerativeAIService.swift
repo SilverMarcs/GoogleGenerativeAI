@@ -15,13 +15,13 @@
 import Foundation
 
 @available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
-struct GenerativeAIService {
+public struct GenerativeAIService {
   /// Gives permission to talk to the backend.
   private let apiKey: String
 
   private let urlSession: URLSession
 
-  init(apiKey: String, urlSession: URLSession) {
+  public init(apiKey: String, urlSession: URLSession) {
     self.apiKey = apiKey
     self.urlSession = urlSession
   }
@@ -143,6 +143,55 @@ struct GenerativeAIService {
       }
     }
   }
+    
+    public func listModels() async throws -> ModelList {
+        // Define the URL for the list models endpoint
+        guard let url = URL(string: "https://generativelanguage.googleapis.com/v1beta/models?key=\(apiKey)") else {
+            throw NSError(domain: "com.google.generative-ai", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid URL for listing models."])
+        }
+
+        var urlRequest = URLRequest(url: url)
+        urlRequest.httpMethod = "GET"
+        urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        #if DEBUG
+        printCURLCommand(from: urlRequest)
+        #endif
+
+        let (data, response) = try await urlSession.data(for: urlRequest)
+
+        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+            throw NSError(domain: "com.google.generative-ai", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to fetch models."])
+        }
+
+        return try parseResponse(ModelList.self, from: data)
+    }
+    
+//    public func listModels(request: ListModelsRequest = .init()) async throws -> ModelList {
+//        return try await listModels(request: request)
+//    }
+//    
+//    private func listModels<T: GenerativeAIRequest>(request: T) async throws -> T.Response {
+//        // Define the URL for the list models endpoint
+////        var urlRequest = URLRequest(url: request.url)
+////        urlRequest.httpMethod = "GET"
+////        urlRequest.setValue(apiKey, forHTTPHeaderField: "x-goog-api-key")
+////        urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
+//        
+//        #if DEBUG
+//        printCURLCommand(from: urlRequest)
+//        #endif
+//        
+//        let (data, response) = try await urlSession.data(for: urlRequest)
+//        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+//            throw NSError(domain: "com.google.generative-ai",
+//              code: -1,
+//              userInfo: [NSLocalizedDescriptionKey: "Failed to fetch models."]
+//            )
+//        }
+//        
+//        return try parseResponse(T.Response.self, from: data)
+//    }
 
   // MARK: - Private Helpers
 
