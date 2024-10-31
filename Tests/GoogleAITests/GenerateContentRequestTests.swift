@@ -49,6 +49,7 @@ final class GenerateContentRequestTests: XCTestCase {
             parameters: nil
           )]),
         Tool.codeExecution,
+        Tool.googleSearchRetrieval,
       ],
       toolConfig: ToolConfig(functionCallingConfig: FunctionCallingConfig(mode: .auto)),
       systemInstruction: ModelContent(role: "system", parts: "test-system-instruction"),
@@ -108,6 +109,11 @@ final class GenerateContentRequestTests: XCTestCase {
         },
         {
           "codeExecution" : {
+
+          }
+        },
+        {
+          "googleSearchRetrieval" : {
 
           }
         }

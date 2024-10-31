@@ -157,6 +157,11 @@ public struct CodeExecutionDeclaration {
     
 }
 
+public struct GoogleSearchRetrievalDeclaration {
+    
+}
+
+
 /// Helper tools that the model may use to generate response.
 ///
 /// A `Tool` is a piece of code that enables the system to interact with external systems to
@@ -167,6 +172,9 @@ public struct Tool {
   
   /// Code Execution Tool
   let codeExecution: CodeExecutionDeclaration?
+    
+    /// Google Search Retrieval Tool
+    let googleSearchRetrieval: GoogleSearchRetrievalDeclaration?
 
   /// Constructs a new `Tool`.
   ///
@@ -179,9 +187,14 @@ public struct Tool {
   ///   populating ``FunctionCall`` in the response. The next conversation turn may contain a
   ///   ``FunctionResponse`` in ``ModelContent/Part/functionResponse(_:)`` with the
   ///   ``ModelContent/role`` "function", providing generation context for the next model turn.
-  public init(functionDeclarations: [FunctionDeclaration]?, codeExecutionDeclaration: CodeExecutionDeclaration? = nil) {
+  public init(
+    functionDeclarations: [FunctionDeclaration]?,
+    codeExecutionDeclaration: CodeExecutionDeclaration? = nil,
+    googleSearchRetrievalDeclaration: GoogleSearchRetrievalDeclaration? = nil
+  ) {
     self.functionDeclarations = functionDeclarations
     self.codeExecution = codeExecutionDeclaration
+    self.googleSearchRetrieval = googleSearchRetrievalDeclaration
   }
 }
 
@@ -337,11 +350,21 @@ extension Schema: Encodable {}
 extension DataType: Encodable {}
 
 extension Tool: Encodable {
-    public static let codeExecution = Tool(functionDeclarations: nil, codeExecutionDeclaration: .init())
+    public static let codeExecution = Tool(
+        functionDeclarations: nil,
+        codeExecutionDeclaration: .init(),
+        googleSearchRetrievalDeclaration: nil
+    )
+    public static let googleSearchRetrieval = Tool(
+        functionDeclarations: nil,
+        codeExecutionDeclaration: nil,
+        googleSearchRetrievalDeclaration: .init()
+    )
     
     enum CodingKeys: String, CodingKey {
         case functionDeclarations
         case codeExecution
+        case googleSearchRetrieval
     }
 }
 
@@ -354,6 +377,8 @@ extension ToolConfig: Encodable {}
 extension FunctionResponse: Encodable {}
 
 extension CodeExecutionDeclaration: Encodable {}
+
+extension GoogleSearchRetrievalDeclaration: Encodable {}
 
 extension ExecutableCode: Codable {}
 
