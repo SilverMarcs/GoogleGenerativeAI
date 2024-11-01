@@ -163,6 +163,9 @@ public struct Tool {
 
   /// Enables the model to execute code as part of generation.
   let codeExecution: CodeExecution?
+    
+  /// Google Search Retrieval Tool
+  let googleSearchRetrieval: GoogleSearchRetrieval?
 
   /// Constructs a new `Tool`.
   ///
@@ -176,10 +179,13 @@ public struct Tool {
   ///   ``FunctionResponse`` in ``ModelContent/Part/functionResponse(_:)`` with the
   ///   ``ModelContent/role`` "function", providing generation context for the next model turn.
   ///   - codeExecution: Enables the model to execute code as part of generation, if provided.
+  ///   - googleSearchRetrieval: Enables the model to retrieve information from Google Search.
   public init(functionDeclarations: [FunctionDeclaration]? = nil,
-              codeExecution: CodeExecution? = nil) {
+              codeExecution: CodeExecution? = nil,
+              googleSearchRetrieval: GoogleSearchRetrieval? = nil) {
     self.functionDeclarations = functionDeclarations
     self.codeExecution = codeExecution
+    self.googleSearchRetrieval = googleSearchRetrieval
   }
 }
 
@@ -256,6 +262,11 @@ public struct FunctionResponse: Equatable {
 /// generated when using this tool.
 public struct CodeExecution {
   /// Constructs a new `CodeExecution` tool.
+  public init() {}
+}
+
+public struct GoogleSearchRetrieval {
+  /// Constructs a new `GoogleSearchRetrieval` tool.
   public init() {}
 }
 
@@ -352,6 +363,8 @@ extension FunctionResponse: Encodable {}
 extension CodeExecution: Encodable {}
 
 extension ExecutableCode: Codable {}
+
+extension GoogleSearchRetrieval: Encodable {}
 
 @available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
 extension CodeExecutionResult.Outcome: Codable {
