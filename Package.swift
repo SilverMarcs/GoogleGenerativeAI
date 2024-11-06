@@ -18,7 +18,7 @@
 import PackageDescription
 
 let package = Package(
-  name: "generative-ai-swift",
+  name: "GoogleGenerativeAI",
   platforms: [
     .iOS(.v11),
     .macOS(.v10_13),
@@ -43,11 +43,6 @@ let package = Package(
         .process("GoogleAITests/CountTokenResponses"),
         .process("GoogleAITests/GenerateContentResponses"),
       ]
-    ),
-    .testTarget(
-      name: "CodeSnippetTests",
-      dependencies: ["GoogleGenerativeAI"],
-      path: "samples"
     ),
   ]
 )
