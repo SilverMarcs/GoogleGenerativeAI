@@ -21,6 +21,11 @@ public struct FunctionCall: Equatable {
 
   /// The function parameters and values.
   public let args: JSONObject
+	
+  public init(name: String, args: JSONObject) {
+      self.name = name
+      self.args = args
+  }
 }
 
 /// A `Schema` object allows the definition of input and output data types.
