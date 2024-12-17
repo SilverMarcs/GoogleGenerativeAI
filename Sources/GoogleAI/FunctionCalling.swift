@@ -162,7 +162,7 @@ public struct FunctionDeclaration {
 ///
 /// A `Tool` is a piece of code that enables the system to interact with external systems to
 /// perform an action, or set of actions, outside of knowledge and scope of the model.
-public struct Tool {
+public struct Tool: Encodable {
   /// A list of `FunctionDeclarations` available to the model.
   let functionDeclarations: [FunctionDeclaration]?
 
@@ -185,14 +185,16 @@ public struct Tool {
   ///   ``ModelContent/role`` "function", providing generation context for the next model turn.
   ///   - codeExecution: Enables the model to execute code as part of generation, if provided.
   ///   - googleSearchRetrieval: Enables the model to retrieve information from Google Search.
-  public init(functionDeclarations: [FunctionDeclaration]? = nil,
-              codeExecution: CodeExecution? = nil,
-              googleSearchRetrieval: GoogleSearchRetrieval? = nil) {
-    self.functionDeclarations = functionDeclarations
-    self.codeExecution = codeExecution
-    self.googleSearchRetrieval = googleSearchRetrieval
-  }
+    public init(functionDeclarations: [FunctionDeclaration]? = nil,
+                codeExecution: CodeExecution? = nil,
+                googleSearchRetrieval: GoogleSearchRetrieval? = nil) {
+        self.functionDeclarations = functionDeclarations
+        self.codeExecution = codeExecution
+        self.googleSearchRetrieval = googleSearchRetrieval
+    }
 }
+
+
 
 /// Configuration for specifying function calling behavior.
 public struct FunctionCallingConfig {
@@ -354,8 +356,6 @@ extension FunctionDeclaration: Encodable {
 extension Schema: Encodable {}
 
 extension DataType: Encodable {}
-
-extension Tool: Encodable {}
 
 extension FunctionCallingConfig: Encodable {}
 

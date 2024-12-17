@@ -39,6 +39,46 @@ extension GenerateContentRequest: Encodable {
     case toolConfig
     case systemInstruction
   }
+  
+  func encode(to encoder: Encoder) throws {
+    var container = encoder.container(keyedBy: CodingKeys.self)
+    try container.encode(model, forKey: .model)
+    try container.encode(contents, forKey: .contents)
+    try container.encodeIfPresent(generationConfig, forKey: .generationConfig)
+    try container.encodeIfPresent(safetySettings, forKey: .safetySettings)
+    try container.encodeIfPresent(toolConfig, forKey: .toolConfig)
+    try container.encodeIfPresent(systemInstruction, forKey: .systemInstruction)
+    
+    // Special handling for tools to merge function declarations
+    if let tools = tools {
+      var mergedTool = CombinedTool()
+      for tool in tools {
+        if let functionDeclarations = tool.functionDeclarations {
+          mergedTool.functionDeclarations.append(contentsOf: functionDeclarations)
+        }
+        if tool.codeExecution != nil {
+          mergedTool.codeExecution = tool.codeExecution
+        }
+        if tool.googleSearchRetrieval != nil {
+          mergedTool.googleSearchRetrieval = tool.googleSearchRetrieval
+        }
+      }
+      try container.encode([mergedTool], forKey: .tools)
+    }
+  }
+  
+  // Helper structure to combine tools
+  private struct CombinedTool: Encodable {
+    var functionDeclarations: [FunctionDeclaration] = []
+    var codeExecution: CodeExecution?
+    var googleSearchRetrieval: GoogleSearchRetrieval?
+    
+    enum CodingKeys: String, CodingKey {
+      case functionDeclarations = "function_declarations"
+      case codeExecution
+      case googleSearchRetrieval
+    }
+  }
 }
 
 @available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
